@@ -1,23 +1,146 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Página Origen con captions()</title>
+  <meta charset="UTF-8">
+  <title>Validar Gráfico 1.0</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background-color: #333333;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+    }
+
+    .form-container {
+      background-color: #444;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .form-section {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    input[type="radio"] {
+      margin-right: 8px;
+    }
+
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: none;
+      resize: none;
+      font-size: 14px;
+    }
+
+    input[readonly] {
+      background-color: #555;
+      color: #aaa;
+      cursor: not-allowed;
+    }
+
+    textarea {
+      height: 80px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #00b894;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #019374;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
 
-  <button id="ir-validacion">Validar gráfico actual</button>
+  <div class="form-container">
+    <h2>VALIDAR GRÁFICO 1.0</h2>
+
+    <form id="validacion-form">
+      <div class="form-section">
+        <label for="nombre-grafico">Nombre del gráfico:</label>
+        <input type="text" id="nombre-grafico" name="nombre-grafico" readonly placeholder="Cargando...">
+      </div>
+
+      <div class="form-section">
+        <label>¿El gráfico es válido?</label>
+        <label><input type="radio" name="validacion" value="si" required> Sí</label>
+        <label><input type="radio" name="validacion" value="no"> No</label>
+      </div>
+
+      <div id="explicacion-section" class="form-section hidden">
+        <label for="explicacion">Por favor, explique por qué:</label>
+        <textarea id="explicacion" name="explicacion" placeholder="Escriba su motivo aquí..."></textarea>
+      </div>
+
+      <button type="submit">Enviar</button>
+    </form>
+  </div>
 
   <script>
-    // Simulo captions() — reemplaza esta función con la real de Pyramid
-    function captions() {
-      return "%Crecimiento Año Anterior (3), Dec 2024"; // ejemplo
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
     }
 
-    document.getElementById('ir-validacion').addEventListener('click', () => {
-      const caption = captions();
-      const url = "https://givanvillanueva.github.io/pages/validacion.html?grafico=" + encodeURIComponent(caption);
-      window.location.href = url;
+    const graficoParam = getQueryParam("grafico");
+    if (graficoParam) {
+      document.getElementById("nombre-grafico").value = decodeURIComponent(graficoParam);
+    }
+
+    const radios = document.querySelectorAll('input[name="validacion"]');
+    const explicacionSection = document.getElementById('explicacion-section');
+
+    radios.forEach(radio => {
+      radio.addEventListener('change', function () {
+        explicacionSection.classList.toggle('hidden', this.value !== 'no');
+      });
+    });
+
+    document.getElementById('validacion-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const nombreGrafico = document.getElementById('nombre-grafico').value;
+      const validacion = document.querySelector('input[name="validacion"]:checked').value;
+      const explicacion = document.getElementById('explicacion').value;
+      
+      alert(`Nombre del gráfico: ${nombreGrafico}\nRespuesta: ${validacion}\nExplicación: ${explicacion || 'N/A'}`);
+
+      // Cierra el popup en Pyramind Analytics si existe la función closePopup
+      if (window.parent && typeof window.parent.closePopup === 'function') {
+        window.parent.closePopup();
+      }
     });
   </script>
 
