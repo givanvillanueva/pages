@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Página Origen con captions()</title>
+</head>
+<body>
+
+  <button id="ir-validacion">Validar gráfico actual</button>
+
+  <script>
+    // Simulo captions() — reemplaza esta función con la real de Pyramid
+    function captions() {
+      return "%Crecimiento Año Anterior (3), Dec 2024"; // ejemplo
+    }
+
+    document.getElementById('ir-validacion').addEventListener('click', () => {
+      const caption = captions();
+      const url = "https://givanvillanueva.github.io/pages/validacion.html?grafico=" + encodeURIComponent(caption);
+      window.location.href = url;
+    });
+  </script>
+
+</body>
+</html>
