@@ -81,12 +81,18 @@
     .hidden {
       display: none;
     }
+
+    .mensaje-confirmacion {
+      text-align: center;
+      font-size: 18px;
+      padding: 20px;
+    }
   </style>
 </head>
 <body>
 
-  <div class="form-container">
-    <h2>VALIDACIÓN</h2>
+  <div class="form-container" id="contenedor-formulario">
+    <h2>VALIDACION</h2>
 
     <form id="validacion-form">
       <div class="form-section">
@@ -107,27 +113,23 @@
 
       <button type="submit">Enviar</button>
     </form>
+
+    <div id="mensaje-confirmacion" class="mensaje-confirmacion hidden">
+      Datos validados, por favor cierre la ventana emergente.
+    </div>
   </div>
 
   <script>
-    // Obtener parámetro "grafico" de la URL
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(param);
     }
 
-    // Colocar valor en el input si existe
     const graficoParam = getQueryParam("grafico");
     if (graficoParam) {
-      try {
-        const decoded = decodeURIComponent(decodeURIComponent(graficoParam));
-        document.getElementById("nombre-grafico").value = decoded;
-      } catch (e) {
-        document.getElementById("nombre-grafico").value = graficoParam;
-      }
+      document.getElementById("nombre-grafico").value = decodeURIComponent(graficoParam);
     }
 
-    // Mostrar/ocultar explicación si responde "No"
     const radios = document.querySelectorAll('input[name="validacion"]');
     const explicacionSection = document.getElementById('explicacion-section');
 
@@ -137,27 +139,12 @@
       });
     });
 
-    // Enviar formulario
     document.getElementById('validacion-form').addEventListener('submit', function (e) {
       e.preventDefault();
-
-      const nombreGrafico = document.getElementById('nombre-grafico').value;
-      const validacion = document.querySelector('input[name="validacion"]:checked').value;
-      const explicacion = document.getElementById('explicacion').value;
-
-      alert(`Nombre del gráfico: ${nombreGrafico}\nRespuesta: ${validacion}\nExplicación: ${explicacion || 'N/A'}`);
-
-      // Cerrar ventana o popup
-      setTimeout(() => {
-        if (window.parent && typeof window.parent.closePopup === 'function') {
-          window.parent.closePopup();
-        } else {
-          window.close();
-        }
-      }, 300);
+      document.getElementById('validacion-form').classList.add('hidden');
+      document.getElementById('mensaje-confirmacion').classList.remove('hidden');
     });
   </script>
 
 </body>
 </html>
-
