@@ -94,25 +94,27 @@
   <div class="form-container" id="contenedor-formulario">
     <h2>VALIDACION</h2>
 
-    <form id="validacion-form">
-      <div class="form-section">
-        <label for="nombre-grafico">Nombre del gráfico:</label>
-        <input type="text" id="nombre-grafico" name="nombre-grafico" readonly placeholder="Cargando...">
-      </div>
+      <form id="validacion-form" action="https://script.google.com/macros/s/AKfycbxzqRGaLWEFI5HDRC-n5RAptoKE2hWcZvm2ddqWYwlLEd8PrCLU-IMJUBijO55HA0bkrA/exec" method="POST">
+  
+  <div class="form-section">
+    <label for="nombre-grafico">Nombre del gráfico:</label>
+    <input type="text" id="nombre-grafico" name="nombre-grafico" readonly placeholder="Cargando...">
+  </div>
 
-      <div class="form-section">
-        <label>¿El gráfico es válido?</label>
-        <label><input type="radio" name="validacion" value="si" required> Sí</label>
-        <label><input type="radio" name="validacion" value="no"> No</label>
-      </div>
+  <div class="form-section">
+    <label>¿El gráfico es válido?</label>
+    <label><input type="radio" name="validacion" value="si" required> Sí</label>
+    <label><input type="radio" name="validacion" value="no"> No</label>
+  </div>
 
-      <div id="explicacion-section" class="form-section hidden">
-        <label for="explicacion">Por favor, explique por qué:</label>
-        <textarea id="explicacion" name="explicacion" placeholder="Escriba su motivo aquí..."></textarea>
-      </div>
+  <div id="explicacion-section" class="form-section hidden">
+    <label for="explicacion">Por favor, explique por qué:</label>
+    <textarea id="explicacion" name="explicacion" placeholder="Escriba su motivo aquí..."></textarea>
+  </div>
 
-      <button type="submit">Enviar</button>
-    </form>
+  <button type="submit">Enviar</button>
+</form>
+
 
     <div id="mensaje-confirmacion" class="mensaje-confirmacion hidden">
       Datos validados, por favor cierre la ventana emergente.
