@@ -92,29 +92,30 @@
 <body>
 
   <div class="form-container" id="contenedor-formulario">
-    <h2>VALIDACION</h2>
+    <h2>VALIDACIÓN</h2>
 
-      <form id="validacion-form" action="https://script.google.com/macros/s/AKfycbxzqRGaLWEFI5HDRC-n5RAptoKE2hWcZvm2ddqWYwlLEd8PrCLU-IMJUBijO55HA0bkrA/exec" method="POST">
-  
-  <div class="form-section">
-    <label for="nombre-grafico">Nombre del gráfico:</label>
-    <input type="text" id="nombre-grafico" name="nombre-grafico" readonly placeholder="Cargando...">
-  </div>
+    <form id="validacion-form"
+          action="https://script.google.com/macros/s/AKfycbxzqRGaLWEFI5HDRC-n5RAptoKE2hWcZvm2ddqWYwlLEd8PrCLU-IMJUBijO55HA0bkrA/exec"
+          method="POST">
+      
+      <div class="form-section">
+        <label for="nombre-grafico">Nombre del gráfico:</label>
+        <input type="text" id="nombre-grafico" name="nombre-grafico" readonly placeholder="Cargando...">
+      </div>
 
-  <div class="form-section">
-    <label>¿El gráfico es válido?</label>
-    <label><input type="radio" name="validacion" value="si" required> Sí</label>
-    <label><input type="radio" name="validacion" value="no"> No</label>
-  </div>
+      <div class="form-section">
+        <label>¿El gráfico es válido?</label>
+        <label><input type="radio" name="validacion" value="si" required> Sí</label>
+        <label><input type="radio" name="validacion" value="no"> No</label>
+      </div>
 
-  <div id="explicacion-section" class="form-section hidden">
-    <label for="explicacion">Por favor, explique por qué:</label>
-    <textarea id="explicacion" name="explicacion" placeholder="Escriba su motivo aquí..."></textarea>
-  </div>
+      <div id="explicacion-section" class="form-section hidden">
+        <label for="explicacion">Por favor, explique por qué:</label>
+        <textarea id="explicacion" name="explicacion" placeholder="Escriba su motivo aquí..."></textarea>
+      </div>
 
-  <button type="submit">Enviar</button>
-</form>
-
+      <button type="submit">Enviar</button>
+    </form>
 
     <div id="mensaje-confirmacion" class="mensaje-confirmacion hidden">
       Datos validados, por favor cierre la ventana emergente.
@@ -122,16 +123,19 @@
   </div>
 
   <script>
+    // Obtener el parámetro ?grafico=
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(param);
     }
 
+    // Prellenar el campo "nombre-grafico"
     const graficoParam = getQueryParam("grafico");
     if (graficoParam) {
       document.getElementById("nombre-grafico").value = decodeURIComponent(graficoParam);
     }
 
+    // Mostrar u ocultar campo de explicación si se elige "no"
     const radios = document.querySelectorAll('input[name="validacion"]');
     const explicacionSection = document.getElementById('explicacion-section');
 
@@ -139,12 +143,6 @@
       radio.addEventListener('change', function () {
         explicacionSection.classList.toggle('hidden', this.value !== 'no');
       });
-    });
-
-    document.getElementById('validacion-form').addEventListener('submit', function (e) {
-      e.preventDefault();
-      document.getElementById('validacion-form').classList.add('hidden');
-      document.getElementById('mensaje-confirmacion').classList.remove('hidden');
     });
   </script>
 
