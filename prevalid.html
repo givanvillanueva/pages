@@ -99,7 +99,10 @@
         <label for="nombre-grafico">Nombre del gráfico:</label>
         <input type="text" id="nombre-grafico" name="nombre-grafico" readonly placeholder="Cargando...">
       </div>
-
+    <div class="form-section">
+      <label for="fecha-validacion">Fecha de validación:</label>
+      <input type="text" id="fecha-validacion" name="fecha-validacion" readonly>
+    </div>
       <div class="form-section">
         <label>¿El gráfico es válido?</label>
         <label><input type="radio" name="validacion" value="si" required> Sí</label>
@@ -130,6 +133,10 @@
     if (graficoParam) {
       document.getElementById("nombre-grafico").value = decodeURIComponent(graficoParam);
     }
+
+    // Insertar la fecha actual en el campo de fecha de validación
+    const fechaHoy = new Date().toISOString().split("T")[0]; // formato yyyy-mm-dd
+    document.getElementById("fecha-validacion").value = fechaHoy;
 
     // Mostrar u ocultar explicación
     const radios = document.querySelectorAll('input[name="validacion"]');
