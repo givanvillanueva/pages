@@ -94,10 +94,7 @@
   <div class="form-container" id="contenedor-formulario">
     <h2>VALIDACIÓN</h2>
 
-    <form id="validacion-form"
-          action="https://script.google.com/macros/s/AKfycbxzqRGaLWEFI5HDRC-n5RAptoKE2hWcZvm2ddqWYwlLEd8PrCLU-IMJUBijO55HA0bkrA/exec"
-          method="POST">
-      
+    <form id="validacion-form">
       <div class="form-section">
         <label for="nombre-grafico">Nombre del gráfico:</label>
         <input type="text" id="nombre-grafico" name="nombre-grafico" readonly placeholder="Cargando...">
@@ -118,30 +115,52 @@
     </form>
 
     <div id="mensaje-confirmacion" class="mensaje-confirmacion hidden">
-      Datos validados, por favor cierre la ventana emergente.
+      ✅ Datos validados, por favor cierre la ventana emergente.
     </div>
   </div>
 
   <script>
-    // Obtener el parámetro ?grafico=
+    // Prellenar nombre del gráfico con ?grafico=
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(param);
     }
 
-    // Prellenar el campo "nombre-grafico"
     const graficoParam = getQueryParam("grafico");
     if (graficoParam) {
       document.getElementById("nombre-grafico").value = decodeURIComponent(graficoParam);
     }
 
-    // Mostrar u ocultar campo de explicación si se elige "no"
+    // Mostrar u ocultar explicación
     const radios = document.querySelectorAll('input[name="validacion"]');
     const explicacionSection = document.getElementById('explicacion-section');
-
     radios.forEach(radio => {
       radio.addEventListener('change', function () {
         explicacionSection.classList.toggle('hidden', this.value !== 'no');
+      });
+    });
+
+    // Manejo personalizado del envío (sin redirección)
+    const form = document.getElementById('validacion-form');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+
+      fetch("https://script.google.com/macros/s/AKfycbxzqRGaLWEFI5HDRC-n5RAptoKE2hWcZvm2ddqWYwlLEd8PrCLU-IMJUBijO55HA0bkrA/exec", {
+        method: "POST",
+        body: formData
+      })
+      .then(response => {
+        if (response.ok) {
+          form.classList.add("hidden");
+          document.getElementById("mensaje-confirmacion").classList.remove("hidden");
+        } else {
+          alert("Hubo un error al enviar los datos.");
+        }
+      })
+      .catch(error => {
+        alert("Error de red: " + error);
       });
     });
   </script>
