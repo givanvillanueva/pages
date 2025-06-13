@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Validar Gráfico 1.0</title>
   <style>
     body {
@@ -97,16 +97,23 @@
     <form id="validacion-form">
       <div class="form-section">
         <label for="nombre-grafico">Nombre del gráfico:</label>
-        <input type="text" id="nombre-grafico" name="nombre-grafico" readonly placeholder="Cargando...">
+        <input type="text" id="nombre-grafico" name="nombre-grafico" readonly placeholder="Cargando..." />
       </div>
-    <div class="form-section">
-      <label for="fecha-validacion">Fecha de validación:</label>
-      <input type="text" id="fecha-validacion" name="fecha-validacion" readonly>
-    </div>
+
+      <div class="form-section">
+        <label for="user">Usuario:</label>
+        <input type="text" id="user" name="user" readonly placeholder="Cargando..." />
+      </div>
+
+      <div class="form-section">
+        <label for="fecha-validacion">Fecha de validación:</label>
+        <input type="text" id="fecha-validacion" name="fecha-validacion" readonly />
+      </div>
+
       <div class="form-section">
         <label>¿El gráfico es válido?</label>
-        <label><input type="radio" name="validacion" value="si" required> Sí</label>
-        <label><input type="radio" name="validacion" value="no"> No</label>
+        <label><input type="radio" name="validacion" value="si" required /> Sí</label>
+        <label><input type="radio" name="validacion" value="no" /> No</label>
       </div>
 
       <div id="explicacion-section" class="form-section hidden">
@@ -123,19 +130,24 @@
   </div>
 
   <script>
-    // Prellenar nombre del gráfico con ?grafico=
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(param);
     }
 
+    // Prellenar 'nombre-grafico' y 'user' desde URL
     const graficoParam = getQueryParam("grafico");
     if (graficoParam) {
       document.getElementById("nombre-grafico").value = decodeURIComponent(graficoParam);
     }
 
+    const userParam = getQueryParam("user");
+    if (userParam) {
+      document.getElementById("user").value = decodeURIComponent(userParam);
+    }
+
     // Insertar la fecha actual en el campo de fecha de validación
-    const fechaHoy = new Date().toISOString().split("T")[0]; // formato yyyy-mm-dd
+    const fechaHoy = new Date().toISOString().split("T")[0];
     document.getElementById("fecha-validacion").value = fechaHoy;
 
     // Mostrar u ocultar explicación
@@ -147,15 +159,14 @@
       });
     });
 
-    // Manejo personalizado del envío (sin redirección)
+    // Enviar datos sin redirigir
     const form = document.getElementById('validacion-form');
     form.addEventListener('submit', function (e) {
       e.preventDefault();
 
       const formData = new FormData(form);
 
-      fetch("https://script.google.com/macros/s/AKfycbymzM-fQZycmnsVZpWLI0mY5SvnKJpVL5YcAiibZWPeUSz_IwGbOXZNrl1h8We8V_tiWg/exec", {
-        
+      fetch("https://script.google.com/macros/s/AKfycbxzqRGaLWEFI5HDRC-n5RAptoKE2hWcZvm2ddqWYwlLEd8PrCLU-IMJUBijO55HA0bkrA/exec", {
         method: "POST",
         body: formData
       })
@@ -172,6 +183,5 @@
       });
     });
   </script>
-
 </body>
 </html>
