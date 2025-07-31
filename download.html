@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embed Example</title>
+    <script src="https://simanalyticsdev.simetrical.org/no-shell/pyramid-embed-js.min.js"></script>
+</head>
+<body>
+  <div id="embed-container" style="width:1280px; height:720px;"></div>
+
+  <script>
+    const embedClient = new PyramidEmbedClient('https://simanalyticsdev.simetrical.org/');
+
+    const container = document.getElementById('embed-container');
+
+    embedClient.embed(container, {
+      contentId: '38bab8b8-06f8-4233-ac40-5539dce5ac25',
+      // See the full styles object in help
+      appStyles: { global: { font: '...' } },
+    });
+  </script>
+</body>
+</html>
