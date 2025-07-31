@@ -17,7 +17,7 @@
   await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
 
   while (!window.html2canvas || !window.jspdf) {
-    await new Promise(r => setTimeout(r, 100));
+    await new Promise(r => setTimeout(r, 50));
   }
 
   const { jsPDF } = window.jspdf;
@@ -25,17 +25,12 @@
   const maxSlides = 4;
 
   for (let i = 0; i < maxSlides; i++) {
-    console.log(`Capturando slide ${i + 1}...`);
-
     const scrollContainer = document.querySelector('div[style*="overflow: scroll"]');
-    if (!scrollContainer) {
-      console.warn("No se encontró el contenedor con scroll");
-      break;
-    }
+    if (!scrollContainer) break;
 
     const originalHeight = scrollContainer.style.height;
     scrollContainer.style.height = scrollContainer.scrollHeight + 'px';
-    await new Promise(r => setTimeout(r, 500)); // Esperar que todo se renderice
+    await new Promise(r => setTimeout(r, 100)); // Esperar mínimo render
 
     const canvas = await html2canvas(scrollContainer);
     scrollContainer.style.height = originalHeight;
@@ -59,7 +54,6 @@
       }
     }
 
-    // Simular flecha derecha (ArrowRight)
     const keyboardEvent = new KeyboardEvent('keydown', {
       key: 'ArrowRight',
       code: 'ArrowRight',
@@ -69,7 +63,7 @@
     });
     document.dispatchEvent(keyboardEvent);
 
-    await new Promise(r => setTimeout(r, 2000)); // Esperar cambio de slide
+    await new Promise(r => setTimeout(r, 500)); // Espera mínima antes del siguiente slide
   }
 
   pdf.save('captura_multislide.pdf');
