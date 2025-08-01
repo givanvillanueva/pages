@@ -1,23 +1,34 @@
 (async () => {
-  // Mostrar spinner de carga
-  const loader = document.createElement('div');
-  loader.id = 'pdf-loader';
-  loader.style.cssText = `
+  // Crear overlay con blur y spinner centrado
+  const overlay = document.createElement('div');
+  overlay.id = 'pdf-overlay';
+  overlay.style.cssText = `
     position: fixed;
-    top: 20px;
-    right: 20px;
-    background: rgba(0,0,0,0.8);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-size: 16px;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(5px);
     z-index: 9999;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    font-family: sans-serif;
+    font-size: 18px;
+    color: #333;
   `;
-  loader.innerHTML = `<span class="spinner" style="border: 4px solid #fff; border-top: 4px solid transparent; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite;"></span> Generando PDF...`;
-  document.body.appendChild(loader);
+
+  overlay.innerHTML = `
+    <div style="
+      width: 40px;
+      height: 40px;
+      border: 5px solid #999;
+      border-top: 5px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    "></div>
+    <div id="pdf-message">Generando PDF...</div>
+  `;
 
   const style = document.createElement('style');
   style.innerHTML = `
@@ -27,6 +38,7 @@
     }
   `;
   document.head.appendChild(style);
+  document.body.appendChild(overlay);
 
   // Función para cargar scripts externos
   async function loadScript(src) {
@@ -63,7 +75,7 @@
 
     const originalHeight = scrollContainer.style.height;
     scrollContainer.style.height = scrollContainer.scrollHeight + 'px';
-    await new Promise(r => setTimeout(r, 800)); // Esperar que se renderice
+    await new Promise(r => setTimeout(r, 800)); // Esperar renderizado
 
     const canvas = await html2canvas(scrollContainer);
     scrollContainer.style.height = originalHeight;
@@ -102,7 +114,9 @@
 
   pdf.save('captura_multislide.pdf');
 
-  // Cambiar mensaje de loader
-  loader.innerHTML = '✅ PDF descargado correctamente';
-  setTimeout(() => loader.remove(), 3000);
+  // Cambiar mensaje de estado y eliminar overlay
+  document.getElementById('pdf-message').textContent = '✅ PDF descargado correctamente';
+  setTimeout(() => {
+    document.getElementById('pdf-overlay')?.remove();
+  }, 3000);
 })();
