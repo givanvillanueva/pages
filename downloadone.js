@@ -1,4 +1,15 @@
 (async () => {
+  let cancelRequested = false;
+
+  // Detectar tecla Esc
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      cancelRequested = true;
+      const msg = document.getElementById('pdf-message');
+      if (msg) msg.textContent = '❌ Cancelado por el usuario';
+    }
+  });
+
   // Crear overlay con blur y spinner centrado
   const overlay = document.createElement('div');
   overlay.id = 'pdf-overlay';
@@ -40,7 +51,6 @@
   document.head.appendChild(style);
   document.body.appendChild(overlay);
 
-  // Función para cargar scripts externos
   async function loadScript(src) {
     return new Promise((resolve, reject) => {
       if (document.querySelector(`script[src="${src}"]`)) {
@@ -67,15 +77,14 @@
   const maxSlides = 4;
 
   for (let i = 0; i < maxSlides; i++) {
+    if (cancelRequested) break;
+
     const scrollContainer = document.querySelector('div[style*="overflow: scroll"]');
-    if (!scrollContainer) {
-      console.warn("No se encontró el contenedor con scroll");
-      break;
-    }
+    if (!scrollContainer) break;
 
     const originalHeight = scrollContainer.style.height;
     scrollContainer.style.height = scrollContainer.scrollHeight + 'px';
-    await new Promise(r => setTimeout(r, 800)); // Esperar renderizado
+    await new Promise(r => setTimeout(r, 800));
 
     const canvas = await html2canvas(scrollContainer);
     scrollContainer.style.height = originalHeight;
@@ -92,6 +101,7 @@
       let heightLeft = pdfHeight;
       let position = 0;
       while (heightLeft > 0) {
+        if (cancelRequested) break;
         if (i > 0 || position !== 0) pdf.addPage();
         pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
         heightLeft -= pageHeight;
@@ -99,7 +109,6 @@
       }
     }
 
-    // Simular flecha derecha (ArrowRight)
     const keyboardEvent = new KeyboardEvent('keydown', {
       key: 'ArrowRight',
       code: 'ArrowRight',
@@ -112,10 +121,11 @@
     await new Promise(r => setTimeout(r, 1500));
   }
 
-  pdf.save('captura_multislide.pdf');
+  if (!cancelRequested) {
+    pdf.save('captura_multislide.pdf');
+    document.getElementById('pdf-message').textContent = '✅ PDF descargado correctamente';
+  }
 
-  // Cambiar mensaje de estado y eliminar overlay
-  document.getElementById('pdf-message').textContent = '✅ PDF descargado correctamente';
   setTimeout(() => {
     document.getElementById('pdf-overlay')?.remove();
   }, 3000);
