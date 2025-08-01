@@ -69,7 +69,7 @@
   await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
 
   while (!window.html2canvas || !window.jspdf) {
-    await new Promise(r => setTimeout(r, 100));
+    await new Promise(r => setTimeout(r, 500));
   }
 
   const { jsPDF } = window.jspdf;
