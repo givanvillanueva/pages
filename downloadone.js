@@ -4,13 +4,19 @@
   // Detectar tecla Esc
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      cancelRequested = true;
-      const msg = document.getElementById('pdf-message');
-      if (msg) msg.textContent = '❌ Cancelado por el usuario';
+      cancelPDF();
     }
   });
 
-  // Crear overlay con blur y spinner centrado
+  function cancelPDF() {
+    cancelRequested = true;
+    const msg = document.getElementById('pdf-message');
+    if (msg) msg.textContent = '❌ Cancelado por el usuario';
+    const overlay = document.getElementById('pdf-overlay');
+    if (overlay) overlay.remove();
+  }
+
+  // Crear overlay con spinner centrado, blur y botón cancelar
   const overlay = document.createElement('div');
   overlay.id = 'pdf-overlay';
   overlay.style.cssText = `
@@ -30,15 +36,23 @@
 
   overlay.innerHTML = `
     <div style="
-      width: 40px;
-      height: 40px;
-      border: 5px solid #999;
-      border-top: 5px solid transparent;
+      width: 50px;
+      height: 50px;
+      border: 6px solid #999;
+      border-top: 6px solid transparent;
       border-radius: 50%;
       animation: spin 1s linear infinite;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     "></div>
-    <div id="pdf-message">Generando PDF...</div>
+    <div id="pdf-message" style="margin-bottom: 10px;">Generando PDF...</div>
+    <button id="cancel-btn" style="
+      padding: 8px 16px;
+      background: #cc0000;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    ">Cancelar</button>
   `;
 
   const style = document.createElement('style');
@@ -50,6 +64,8 @@
   `;
   document.head.appendChild(style);
   document.body.appendChild(overlay);
+
+  document.getElementById('cancel-btn').addEventListener('click', cancelPDF);
 
   async function loadScript(src) {
     return new Promise((resolve, reject) => {
@@ -69,7 +85,7 @@
   await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
 
   while (!window.html2canvas || !window.jspdf) {
-    await new Promise(r => setTimeout(r, 500));
+    await new Promise(r => setTimeout(r, 100));
   }
 
   const { jsPDF } = window.jspdf;
@@ -77,7 +93,7 @@
   const maxSlides = 4;
 
   for (let i = 0; i < maxSlides; i++) {
-    if (cancelRequested) break;
+    if (cancelRequested) return;
 
     const scrollContainer = document.querySelector('div[style*="overflow: scroll"]');
     if (!scrollContainer) break;
@@ -101,7 +117,7 @@
       let heightLeft = pdfHeight;
       let position = 0;
       while (heightLeft > 0) {
-        if (cancelRequested) break;
+        if (cancelRequested) return;
         if (i > 0 || position !== 0) pdf.addPage();
         pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
         heightLeft -= pageHeight;
@@ -109,6 +125,7 @@
       }
     }
 
+    // Simular flecha derecha
     const keyboardEvent = new KeyboardEvent('keydown', {
       key: 'ArrowRight',
       code: 'ArrowRight',
@@ -124,9 +141,8 @@
   if (!cancelRequested) {
     pdf.save('captura_multislide.pdf');
     document.getElementById('pdf-message').textContent = '✅ PDF descargado correctamente';
+    setTimeout(() => {
+      document.getElementById('pdf-overlay')?.remove();
+    }, 2500);
   }
-
-  setTimeout(() => {
-    document.getElementById('pdf-overlay')?.remove();
-  }, 3000);
 })();
