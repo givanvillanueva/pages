@@ -1,4 +1,72 @@
 (async () => {
+  let cancelRequested = false;
+
+  // Detectar tecla Esc
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      cancelPDF();
+    }
+  });
+
+  function cancelPDF() {
+    cancelRequested = true;
+    const msg = document.getElementById('pdf-message');
+    if (msg) msg.textContent = '❌ Cancelado por el usuario';
+    const overlay = document.getElementById('pdf-overlay');
+    if (overlay) overlay.remove();
+  }
+
+  // Crear overlay con spinner centrado, blur y botón cancelar
+  const overlay = document.createElement('div');
+  overlay.id = 'pdf-overlay';
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(5px);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: sans-serif;
+    font-size: 18px;
+    color: #333;
+  `;
+
+  overlay.innerHTML = `
+    <div style="
+      width: 50px;
+      height: 50px;
+      border: 6px solid #999;
+      border-top: 6px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    "></div>
+    <div id="pdf-message" style="margin-bottom: 10px;">Generando PDF...</div>
+    <button id="cancel-btn" style="
+      padding: 8px 16px;
+      background: #cc0000;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    ">Cancelar</button>
+  `;
+
+  const style = document.createElement('style');
+  style.innerHTML = `
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  `;
+  document.head.appendChild(style);
+  document.body.appendChild(overlay);
+
+  document.getElementById('cancel-btn').addEventListener('click', cancelPDF);
+
   async function loadScript(src) {
     return new Promise((resolve, reject) => {
       if (document.querySelector(`script[src="${src}"]`)) {
@@ -22,49 +90,59 @@
 
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF('p', 'pt', 'a4');
+  const maxSlides = 1;
 
-  let previousDataUrl = null;
-  const maxTries = 10;
-
-  for (let i = 0; i < maxTries; i++) {
-    console.log(`Capturando slide ${i + 1}...`);
+  for (let i = 0; i < maxSlides; i++) {
+    if (cancelRequested) return;
 
     const scrollContainer = document.querySelector('div[style*="overflow: scroll"]');
-    if (!scrollContainer) {
-      console.warn("No se encontró el contenedor con scroll");
-      break;
-    }
+    if (!scrollContainer) break;
 
     const originalHeight = scrollContainer.style.height;
     scrollContainer.style.height = scrollContainer.scrollHeight + 'px';
-    await new Promise(r => setTimeout(r, 800)); // Esperar render
+    await new Promise(r => setTimeout(r, 800));
 
     const canvas = await html2canvas(scrollContainer);
     scrollContainer.style.height = originalHeight;
 
     const imgData = canvas.toDataURL('image/png');
-
-    // Comparar con el slide anterior
-    if (imgData === previousDataUrl) {
-      console.log("Slide repetido. Se asume que no hay más slides.");
-      break;
-    }
-    previousDataUrl = imgData;
-
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
     const pageHeight = pdf.internal.pageSize.getHeight();
 
-    if (i > 0) pdf.addPage();
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    if (pdfHeight <= pageHeight) {
+      if (i > 0) pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    } else {
+      let heightLeft = pdfHeight;
+      let position = 0;
+      while (heightLeft > 0) {
+        if (cancelRequested) return;
+        if (i > 0 || position !== 0) pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pageHeight;
+        position -= pageHeight;
+      }
+    }
 
     // Simular flecha derecha
-    document.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'ArrowRight', code: 'ArrowRight', keyCode: 39, which: 39, bubbles: true,
-    }));
+    const keyboardEvent = new KeyboardEvent('keydown', {
+      key: 'ArrowRight',
+      code: 'ArrowRight',
+      keyCode: 39,
+      which: 39,
+      bubbles: true,
+    });
+    document.dispatchEvent(keyboardEvent);
 
-    await new Promise(r => setTimeout(r, 2000)); // Esperar cambio
+    await new Promise(r => setTimeout(r, 1500));
   }
 
-  pdf.save('captura_autodetectada.pdf');
+  if (!cancelRequested) {
+    pdf.save('captura_multislide.pdf');
+    document.getElementById('pdf-message').textContent = '✅ PDF descargado correctamente';
+    setTimeout(() => {
+      document.getElementById('pdf-overlay')?.remove();
+    }, 2500);
+  }
 })();
