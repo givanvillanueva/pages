@@ -130,7 +130,7 @@ let headerHeight = 0; //variable global  de largo de encabezado
    
     headerHeight = pdfHeight;  // asignamos altura a la variable global 
 
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.addImage(imgData, 'PNG', 0, 15, pdfWidth, pdfHeight);
   }
 
 // FRAGMENTO CAPTURAR EL CONTENIDO DEL SCROLL (versión corregida)
