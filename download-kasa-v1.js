@@ -175,7 +175,7 @@ if (scrollContainer) {
 }
 //FRAGMENTO QUE GUARDA EL PDF
   if (!cancelRequested) {
-    pdf.save('Impresión_tablero_Fatima.pdf');
+    pdf.save('Impresión_tablero_Efectividad.pdf');
     document.getElementById('pdf-message').textContent = '✅ PDF descargado correctamente';
     setTimeout(() => {
       document.getElementById('pdf-overlay')?.remove();
