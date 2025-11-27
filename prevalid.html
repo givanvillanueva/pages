@@ -169,7 +169,8 @@
     }
 
     // Insertar la fecha actual en el campo de fecha de validación
-    const fechaHoy = new Date().toISOString();
+    const fechaCDMX = new Date().toLocaleString("sv-SE", { timeZone: "America/Mexico_City" }).replace(" ", ", ");
+    const fechaHoy = fechaCDMX;
     document.getElementById("fecha-validacion").value = fechaHoy;
 
     // Mostrar u ocultar explicación
